@@ -9,12 +9,15 @@ from aiogram.filters import Command
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton, FSInputFile, WebAppInfo
 import threading
 
-# ====== НАСТРОЙКИ (ЗАМЕНИ ТОЛЬКО ТОКЕН!!!) ======
-TOKEN = "BOT_TOKEN"
+# ====== НАСТРОЙКИ (токен через переменную окружения!) ======
+TOKEN = os.getenv("BOT_TOKEN")  # <-- БЕЗОПАСНО!
+if not TOKEN:
+    raise ValueError("❌ BOT_TOKEN не задан в переменных окружения!")
+
 ADMIN_ID = 1463056947
 RULES_TEXT = "📋 Здесь будут правила модерации. Пока что заглушка."
 MAP_URL = "https://chieffskiy.github.io/PGF-Bbot/"
-# ================================================
+# ===========================================================
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
@@ -24,7 +27,6 @@ app = Flask(__name__)
 
 @app.route('/get_places', methods=['GET'])
 def get_places_api():
-    """Эндпоинт для карты: отдаёт список одобренных мест в JSON"""
     try:
         conn = sqlite3.connect('places.db')
         cur = conn.cursor()
@@ -35,7 +37,6 @@ def get_places_api():
         ''')
         places = cur.fetchall()
         conn.close()
-        
         result = []
         for p in places:
             photo_url = None
@@ -54,7 +55,6 @@ def get_places_api():
 
 @app.route('/photos/<filename>')
 def get_photo(filename):
-    """Отдаёт фото по имени файла"""
     try:
         return send_from_directory('photos', filename)
     except:
@@ -752,17 +752,16 @@ async def moderate_place(c: types.CallbackQuery):
 
 # ---------- ЗАПУСК ----------
 def run_flask():
-    app.run(host='0.0.0.0', port=5000)
+    # Render назначает порт через переменную окружения PORT
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
 
 async def main():
     print("✅ Бот запущен с WebApp картой!")
     print(f"✅ Админ ID: {ADMIN_ID}")
     print(f"✅ Карта доступна по ссылке: {MAP_URL}")
     
-    # Запускаем Flask в отдельном потоке
     threading.Thread(target=run_flask).start()
-    
-    # Запускаем бота
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
