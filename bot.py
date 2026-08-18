@@ -4,6 +4,7 @@ import os
 import json
 from datetime import datetime
 from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton, FSInputFile, WebAppInfo
@@ -24,6 +25,7 @@ dp = Dispatcher()
 
 # ---------- Flask (ВЕБ-СЕРВЕР ДЛЯ КАРТЫ) ----------
 app = Flask(__name__)
+CORS(app)  # <-- ЭТА СТРОЧКА РАЗРЕШАЕТ ЗАПРОСЫ С ДРУГИХ САЙТОВ
 
 @app.route('/get_places', methods=['GET'])
 def get_places_api():
