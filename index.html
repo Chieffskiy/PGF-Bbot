@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Карта мест для фото</title>
+    <!-- Подключаем Leaflet (библиотека карт) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * { margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        #map { height: 100vh; width: 100vw; }
+        /* Стиль для всплывающего окна с фото */
+        .leaflet-popup-content {
+            text-align: center;
+            min-width: 200px;
+            max-width: 260px;
+        }
+        .leaflet-popup-content img {
+            width: 100%;
+            max-height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 6px;
+        }
+        .place-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        .place-desc {
+            font-size: 13px;
+            color: #666;
+        }
+        /* Стиль для кнопки + (добавим позже) */
+        .add-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 56px;
+            height: 56px;
+            background: #0088cc;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 32px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .add-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+    
+    <!-- Кнопка "Добавить место" (пока просто заглушка) -->
+    <button class="add-btn" onclick="alert('Добавление места будет позже!')">+</button>
+
+    <script>
+        // --- 1. ИНИЦИАЛИЗАЦИЯ КАРТЫ ---
+        // Координаты центра (Москва, но ты можешь поменять)
+        var map = L.map('map').setView([55.7558, 37.6173], 12);
+
+        // Схематичный слой OpenStreetMap (бесплатно, без ключей)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
+        }).addTo(map);
+
+        // --- 2. ТЕСТОВЫЕ МЕТКИ (потом заменим на данные из твоей базы) ---
+        var places = [
+            {
+                id: 1,
+                lat: 55.751244,
+                lon: 37.618423,
+                name: "Красная площадь",
+                photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Red_Square_in_Moscow_2013.jpg/800px-Red_Square_in_Moscow_2013.jpg"
+            },
+            {
+                id: 2,
+                lat: 55.744728,
+                lon: 37.605491,
+                name: "Парк Горького",
+                photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Gorky_Park_Moscow_2014.jpg/800px-Gorky_Park_Moscow_2014.jpg"
+            },
+            {
+                id: 3,
+                lat: 55.765820,
+                lon: 37.605491,
+                name: "Зоопарк",
+                photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Moscow_Zoo_2013.jpg/800px-Moscow_Zoo_2013.jpg"
+            }
+        ];
+
+        // --- 3. ДОБАВЛЯЕМ МЕТКИ НА КАРТУ ---
+        places.forEach(function(place) {
+            // Создаём HTML-контент для всплывающего окна
+            var popupContent = `
+                <div>
+                    <img src="${place.photo}" alt="${place.name}" onerror="this.style.display='none'">
+                    <div class="place-name">${place.name}</div>
+                    <div class="place-desc">ID: ${place.id}</div>
+                </div>
+            `;
+
+            // Ставим метку
+            L.marker([place.lat, place.lon])
+                .addTo(map)
+                .bindPopup(popupContent);
+        });
+
+        // --- 4. КНОПКА "МОЁ МЕСТОПОЛОЖЕНИЕ" (опционально) ---
+        // Добавляем кнопку геолокации (если пользователь разрешит)
+        L.control.locate({
+            position: 'topleft',
+            strings: {
+                title: 'Показать моё местоположение'
+            }
+        }).addTo(map);
+
+        console.log('✅ Карта загружена!');
+    </script>
+
+</body>
+</html>
