@@ -10,7 +10,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeybo
 import threading
 
 # ====== НАСТРОЙКИ (ЗАМЕНИ ТОЛЬКО ТОКЕН!!!) ======
-TOKEN = "8633824973:AAFBMkgVfw8Tqz5JQE6dF1yKEFD7hJEnd7M"
+TOKEN = "BOT_TOKEN"
 ADMIN_ID = 1463056947
 RULES_TEXT = "📋 Здесь будут правила модерации. Пока что заглушка."
 MAP_URL = "https://chieffskiy.github.io/PGF-Bbot/"
